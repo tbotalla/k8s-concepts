@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-k8s-hands-on
+  labels:
+    app: frontend
+spec: # ReplicaSet stuff
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+  template: # Pod stuff
+    metadata:
+      labels:
+        app: frontend
+    spec: # Container/s
+      containers:
+      - name: frontend
+        image: frontend-k8s-hands-on:v1
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: frontend-k8s-hands-on
+    labels:
+        app: frontend
+spec:
+    type: NodePort # Define a Service of type NodePort
+    selector:
+        app: frontend # Label to observe pods
+    ports:
+        - protocol: TCP
+          port: 80 # Port where the Service listens
+        # Redundant target port if it is the same
+        #   targetPort: 80 # Port inside the container to route to

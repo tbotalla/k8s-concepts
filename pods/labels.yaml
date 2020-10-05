@@ -1,0 +1,24 @@
+apiVersion: v1 # Api version
+kind: Pod
+metadata:
+  name: podtest2
+  labels: # Son arbitrarios, pero muy importantes
+    app: front
+    env: dev
+
+spec:
+  containers:
+  - image: nginx:alpine
+    name: cont1
+---
+apiVersion: v1 # Api version
+kind: Pod
+metadata:
+  name: podtest3
+  labels:
+    app: backend
+    env: dev
+spec:
+  containers:
+  - image: nginx:alpine
+    name: cont1

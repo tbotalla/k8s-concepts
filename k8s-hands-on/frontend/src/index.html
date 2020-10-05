@@ -1,0 +1,19 @@
+<div id="id01"></div>
+<img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fcambiodigital-ol.com%2F2019%2F06%2F10-distribuciones-de-kubernetes-que-lideran-la-revolucion-del-contenedor%2F&psig=AOvVaw1GCVnoQPXO2OJXMVISe6Jz&ust=1601948781242000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCOCE37KqnOwCFQAAAAAdAAAAABAD">
+
+<script>
+var xmlhttp = new XMLHttpRequest();
+// var url = "http://backend-k8s-hands-on";
+var url = "http://172.17.0.2:32390/";
+
+
+xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var resp = JSON.parse(this.responseText);
+        document.getElementById("id01").innerHTML = "<h2> La hora es " + resp.time + " y el hostname es " + resp.hostname + "</h2>";
+    }
+};
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
+</script>

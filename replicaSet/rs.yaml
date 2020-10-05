@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: rs-test
+  labels:
+    app: rs-test
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pod-label # Labels that the replicaSet will use to group and keep ownership of pods
+  template: # From down here are the references to the pods
+    metadata:
+        labels: 
+            app: pod-label
+    spec:
+      containers:
+        - image: python:3.7-alpine
+          name: cont1
+          command: ['sh', '-c', 'echo cont1 > index.html && python -m http.server 8082']
