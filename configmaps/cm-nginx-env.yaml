@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: vars
+    labels:
+        app: front
+data:
+    db_host: dev.host.local
+    db_user: dev_user
+    script: |
+        echo DB host es $DB_HOST y DB user es $DB_USER > /usr/share/nginx/html/test.html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: nginx-config
+    labels:
+        app: front
+data:
+    nginx: |
+        server {
+            listen       80;
+            server_name  localhost;    
+            location / {
+                root   /usr/share/nginx/html;
+                index  index.html index.htm;
+            }
+            error_page   500 502 503 504  /50x.html;
+            location = /50x.html {
+                root   /usr/share/nginx/html;
+            }    
+        }
+---
+    
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-test
+  labels:
+    app: front
+spec: # ReplicaSet stuff
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template: # Pod stuff
+    metadata:
+      labels:
+        app: front
+    spec:
+        containers:
+            - name: nginx
+              image: nginx:alpine
+              env:
+                - name: DB_HOST # Name of th env var available on the Pod
+                  valueFrom:
+                    configMapKeyRef:
+                      name: vars # Name of the ConfigMap to read the key
+                      key: db_host # Key of the ConfigMap to get the value
+                - name: DB_USER # Name of th env var available on the Pod
+                  valueFrom:
+                    configMapKeyRef:
+                        name: vars # Name of the ConfigMap to read the key
+                        key: db_user # Key of the ConfigMap to get the value
+              volumeMounts: # Volumes to mount on the Pod
+              - name: nginx-vol # Volume name
+                mountPath: /etc/nginx/conf.d # Path where to place the volume on the container
+              - name: script-vol # Volume name
+                mountPath: /opt # Path where to place the volume on the container  
+        volumes:
+            - name: nginx-vol # Volume name
+              configMap:
+                # Provide the name of the ConfigMap containing the files you want
+                # to add to the container
+                name: nginx-config # Name of the ConfigMap
+                items: # Keys inside the ConfigMap. If not defined mount every key that it finds on the ConfigMap
+                    # - key: nginx # Key of the ConfigMap key to mount
+                    #   path: default.conf # Name that will have once mounted on the Pod
+            - name: script-vol # Volume name
+              configMap:
+                # Provide the name of the ConfigMap containing the files you want
+                # to add to the container
+                name: vars # Name of the ConfigMap
+                items:
+                    - key: script # Key on the ConfigMap to get the value
+                      path: script.sh # Name of the file to mount on the pod
+
