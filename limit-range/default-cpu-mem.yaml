@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: dev
+    labels:
+        name: dev
+---
+# The limitRange only operates on the namespace that has been created
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-cpu-limit-range
+  namespace: dev
+spec:
+  limits:
+  - default:
+      memory: 512Mi
+      cpu: 1
+    defaultRequest:
+      memory: 256Mi
+      cpu: 0.5
+    type: Container
+---
+apiVersion: v1 # Api version
+kind: Pod
+metadata:
+    name: podtest3
+    namespace: dev
+    labels:
+        app: backend
+        env: dev
+spec:
+    containers:
+    - image: nginx:alpine
+      name: cont1
